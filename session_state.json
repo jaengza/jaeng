@@ -41,7 +41,8 @@
                            "risk_per_trade_usd":  2.5,
                            "assets_supported":  [
                                                     "XAUUSD",
-                                                    "BTCUSDT"
+                                                    "BTCUSDT",
+                                                    "ETHUSDT"
                                                 ],
                            "timeframes":  [
                                               "5m",
@@ -61,6 +62,11 @@
                                                                     "minLot":  0.01,
                                                                     "contractValue":  1,
                                                                     "avgSpreadPts":  2150
+                                                                },
+                                                    "ETHUSDT":  {
+                                                                    "minLot":  0.01,
+                                                                    "contractValue":  1,
+                                                                    "avgSpreadPts":  160
                                                                 }
                                                 }
                        },

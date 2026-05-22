@@ -41,6 +41,11 @@
       <span class="asset-label">BTC/USD</span>
       <span class="asset-price" id="h-btc-price">--</span>
     </button>
+    <button class="asset-btn" data-asset="ETHUSDT" id="asset-eth">
+      <span class="asset-icon">🔮</span>
+      <span class="asset-label">ETH/USD</span>
+      <span class="asset-price" id="h-eth-price">--</span>
+    </button>
 
     <button class="asset-btn" data-asset="DXY" id="asset-dxy">
       <span class="asset-icon">💵</span>
@@ -170,6 +175,7 @@
       <div class="control-row">
         <select class="ctrl-select" id="an-asset">
           <option value="BTCUSDT">BTC/USDT</option>
+          <option value="ETHUSDT">ETH/USDT</option>
 
           <option value="XAUUSD" selected>XAU/USD (ทองคำ)</option>
           <option value="DXY">US Dollar Index (DXY)</option>
@@ -207,6 +213,7 @@
       <div class="chart-symbol-btns">
         <button class="chart-sym-btn active" data-symbol="FX_IDC:XAUUSD" data-name="XAUUSD">XAUUSD</button>
         <button class="chart-sym-btn" data-symbol="BINANCE:BTCUSDT" data-name="BTC">BTC</button>
+        <button class="chart-sym-btn" data-symbol="BINANCE:ETHUSDT" data-name="ETH">ETH</button>
 
         <button class="chart-sym-btn" data-symbol="CAPITALCOM:DXY" data-name="DXY">DXY</button>
       </div>
@@ -242,6 +249,7 @@
             <select id="r-asset" class="ctrl-select">
               <option value="XAUUSD">XAUUSD (Gold)</option>
               <option value="BTCUSDT">BTCUSDT</option>
+              <option value="ETHUSDT">ETHUSDT</option>
 
               <option value="FOREX">Forex</option>
               <option value="DXY">DXY (US Dollar Index)</option>

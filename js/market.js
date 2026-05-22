@@ -18,7 +18,7 @@ const Market = {
   init() {
     this.fetchInitialPrices();
     this.connectBTCWebSocket();
-    // this.connectETHWebSocket(); // ETH disabled
+    this.connectETHWebSocket(); // ETH enabled
     this.startXAUPolling();
   },
 
@@ -49,7 +49,7 @@ const Market = {
 
   /* ── REST: Initial Prices ───────────────────────────────────────────────── */
   async fetchInitialPrices() {
-    await Promise.allSettled([this.fetchBTCRest(), this.fetchXAU(), this.fetchDXY()]);
+    await Promise.allSettled([this.fetchBTCRest(), this.fetchETHRest(), this.fetchXAU(), this.fetchDXY()]);
   },
 
   async fetchBTCRest() {
@@ -274,7 +274,7 @@ const Market = {
     if (asset === 'BTCUSDT') {
       data = await this.fetchBinanceKlines('BTCUSDT', tf, limit);
     } else if (asset === 'ETHUSDT') {
-      return []; // ETH price loading disabled
+      data = await this.fetchBinanceKlines('ETHUSDT', tf, limit);
     } else if (asset === 'XAUUSD') {
       // Try Yahoo Finance first
       data = await this.fetchYahooFinanceOHLCV('GC%3DF', tf, limit);

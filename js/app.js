@@ -150,14 +150,12 @@ const App = {
       this.updateChip('btc-change', prices.btcPct, null, null, '%');
       this.updateChip('h-btc-price', prices.btc, 0);
     }
-    // ETH chip updating disabled (asset removed)
-    /*
+    // ETH chip updating enabled
     if (prices.eth > 0) {
       this.updateChip('eth-price', prices.eth, 2, 'text-purple');
       this.updateChip('eth-change', prices.ethPct, null, null, '%');
       this.updateChip('h-eth-price', prices.eth, 2);
     }
-    */
     if (prices.dxy > 0) {
       this.updateChip('dxy-price', prices.dxy, 3, 'text-blue');
       this.updateChip('dxy-change', prices.dxyPct, null, null, '%');
