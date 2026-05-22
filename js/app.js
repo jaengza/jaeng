@@ -1,0 +1,318 @@
+/* ==========================================================================
+   ApexTrader Pro — Main App Coordinator v3.0
+   ========================================================================== */
+
+const App = {
+  currentPanel: 'dashboard',
+  currentAsset: 'XAUUSD',
+  currentTF: '5m',
+
+  init() {
+    this.startClock();
+    this.bindNavigation();
+    this.bindAssets();
+    this.bindGlobalTF();
+    this.bindAnalysis();
+    this.bindChart();
+    this.bindQuickAnalyze();
+
+    // Init modules
+    Market.init();
+    Market.onPriceUpdate(prices => this.onPrices(prices));
+
+    Calculator.init();
+
+    // Load TV widgets
+    this.loadMainChart('FX_IDC:XAUUSD', 5);
+  },
+
+  /* ── Clock ────────────────────────────────────────────────────────────────── */
+  startClock() {
+    const update = () => {
+      const now = new Date();
+      const el  = document.getElementById('live-clock');
+      if (el) el.textContent = now.toLocaleTimeString('th-TH', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+    };
+    update();
+    setInterval(update, 1000);
+  },
+
+  /* ── Panel Navigation ─────────────────────────────────────────────────────────── */
+  bindNavigation() {
+    document.querySelectorAll('.bnav-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const panel = e.currentTarget.dataset.panel;
+        this.switchPanel(panel);
+      });
+    });
+  },
+
+  switchPanel(panelName) {
+    // Hide all
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('panel-active'));
+    document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+
+    // Show target
+    const target = document.getElementById(`panel-${panelName}`);
+    if (target) target.classList.add('panel-active');
+
+    const navBtn = document.getElementById(`bn-${panelName}`);
+    if (navBtn) navBtn.classList.add('active');
+
+    this.currentPanel = panelName;
+  },
+
+  /* ── Asset Tabs ───────────────────────────────────────────────────────────────── */
+  bindAssets() {
+    document.querySelectorAll('.asset-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        document.querySelectorAll('.asset-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const asset = e.currentTarget.dataset.asset;
+        this.currentAsset = asset;
+        // Sync analysis asset selector
+        const sel = document.getElementById('an-asset');
+        if (sel) sel.value = asset;
+        // Auto-run analysis if already on analysis panel
+        if (this.currentPanel === 'analysis') this.runAnalysis();
+      });
+    });
+  },
+
+  /* ── Global TF ───────────────────────────────────────────────────────────────── */
+  bindGlobalTF() {
+    document.querySelectorAll('.tf-pill').forEach(btn => {
+      btn.addEventListener('click', e => {
+        document.querySelectorAll('.tf-pill').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        this.currentTF = e.currentTarget.dataset.tf;
+        // Sync analysis TF
+        document.querySelectorAll('.ctrl-tf').forEach(b => {
+          b.classList.toggle('active', b.dataset.tf === this.currentTF);
+        });
+      });
+    });
+
+    // Analysis panel TF buttons
+    document.querySelectorAll('.ctrl-tf').forEach(btn => {
+      btn.addEventListener('click', e => {
+        document.querySelectorAll('.ctrl-tf').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        this.currentTF = e.currentTarget.dataset.tf;
+        // Sync header TF
+        document.querySelectorAll('.tf-pill').forEach(b => {
+          b.classList.toggle('active', b.dataset.tf === this.currentTF);
+        });
+      });
+    });
+  },
+
+  /* ── Analysis Controls ────────────────────────────────────────────────────────── */
+  bindAnalysis() {
+    document.getElementById('btn-run-analysis')?.addEventListener('click', () => this.runAnalysis());
+    document.getElementById('an-asset')?.addEventListener('change', e => {
+      this.currentAsset = e.target.value;
+    });
+  },
+
+  async runAnalysis() {
+    const asset = document.getElementById('an-asset')?.value || this.currentAsset;
+    const tf    = document.querySelector('.ctrl-tf.active')?.dataset.tf || this.currentTF;
+    const btn   = document.getElementById('btn-run-analysis');
+    const txt   = document.getElementById('btn-run-text');
+
+    if (btn) btn.classList.add('loading');
+    if (txt) txt.textContent = '\u0e01\u0e33\u0e25\u0e31\u0e07\u0e27\u0e34\u0e40\u0e04\u0e23\u0e32\u0e30\u0e2b\u0e4c...';
+
+    await Analysis.run(asset, tf);
+
+    if (btn) btn.classList.remove('loading');
+    if (txt) txt.textContent = '\u0e27\u0e34\u0e40\u0e04\u0e23\u0e32\u0e30\u0e2b\u0e4c\u0e2d\u0e31\u0e15\u0e42\u0e19\u0e21\u0e31\u0e15\u0e34';
+  },
+
+  bindQuickAnalyze() {
+    document.getElementById('btn-quick-analyze')?.addEventListener('click', () => {
+      this.switchPanel('analysis');
+      setTimeout(() => this.runAnalysis(), 100);
+    });
+  },
+
+  /* ── Price updates ──────────────────────────────────────────────────────────── */
+  onPrices(prices) {
+    // Dashboard chips
+    if (prices.xau > 0) {
+      this.updateChip('xau-price', prices.xau, 2, 'text-gold');
+      this.updateChip('xau-change', prices.xauPct, null, null, '%');
+      this.updateChip('h-xau-price', prices.xau, 2);
+    }
+    if (prices.btc > 0) {
+      this.updateChip('btc-price', prices.btc, 0);
+      this.updateChip('btc-change', prices.btcPct, null, null, '%');
+      this.updateChip('h-btc-price', prices.btc, 0);
+    }
+    if (prices.dxy > 0) {
+      this.updateChip('dxy-price', prices.dxy, 3, 'text-blue');
+      this.updateChip('dxy-change', prices.dxyPct, null, null, '%');
+      this.updateChip('h-dxy-price', prices.dxy, 3);
+    }
+  },
+
+  updateChip(id, value, dec, extraClass, suffix = '') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const oldNum = parseFloat(el.dataset.lastVal || 0);
+    let display;
+    if (dec !== null) {
+      const isDxy = id.includes('dxy');
+      const prefix = isDxy ? '' : '$';
+      display = `${prefix}${parseFloat(value).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })}${suffix}`;
+    } else {
+      const sign = value >= 0 ? '+' : '';
+      display = `${sign}${parseFloat(value).toFixed(2)}${suffix}`;
+      el.className = `chip-change ${value >= 0 ? 'up' : 'down'}`;
+    }
+    el.textContent = display;
+    el.dataset.lastVal = value;
+    if (extraClass) el.classList.add(extraClass);
+    // Flash
+    if (oldNum > 0 && dec !== null) {
+      const flashClass = value > oldNum ? 'flash-up' : value < oldNum ? 'flash-down' : '';
+      if (flashClass) {
+        el.classList.add(flashClass);
+        setTimeout(() => el.classList.remove(flashClass), 500);
+      }
+    }
+  },
+
+  /* ── Chart Panel ────────────────────────────────────────────────────────────── */
+  bindChart() {
+    document.querySelectorAll('.chart-sym-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        document.querySelectorAll('.chart-sym-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const symbol   = e.currentTarget.dataset.symbol;
+        const interval = parseInt(document.querySelector('.chart-tf-btn.active')?.dataset.interval || 5);
+        this.loadMainChart(symbol, interval);
+      });
+    });
+
+    document.querySelectorAll('.chart-tf-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        document.querySelectorAll('.chart-tf-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const symbol   = document.querySelector('.chart-sym-btn.active')?.dataset.symbol || 'FX_IDC:XAUUSD';
+        const interval = parseInt(e.currentTarget.dataset.interval);
+        this.loadMainChart(symbol, interval);
+      });
+    });
+  },
+
+  loadMainChart(symbol, interval) {
+    const el = document.getElementById('tv-main-chart');
+    if (!el) return;
+    el.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'tradingview-widget-container__widget';
+    el.appendChild(div);
+    const s = document.createElement('script');
+    s.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+    s.async = true;
+    s.innerHTML = JSON.stringify({
+      autosize: true,
+      symbol,
+      interval: String(interval),
+      timezone: 'Asia/Bangkok',
+      theme: 'dark',
+      style: '1',
+      locale: 'th',
+      enable_publishing: false,
+      allow_symbol_change: false,
+      hide_top_toolbar: false,
+      hide_legend: false,
+      hide_side_toolbar: false,
+      backgroundColor: 'rgba(5,8,16,1)',
+      gridColor: 'rgba(255,255,255,0.04)',
+      studies: ['RSI@tv-basicstudies', 'MACD@tv-basicstudies']
+    });
+    div.appendChild(s);
+  },
+
+
+
+  /* ── Dashboard: Update Signal Cards ──────────────────────────────────────────── */
+  updateDashboardSignals(result) {
+    const el = document.getElementById('signal-cards');
+    if (!el || !result) return;
+    const { rsiVal, macdVal, emaData, score, plan } = result;
+    const asset = Analysis.state.asset;
+    const tf    = Analysis.state.tf;
+    const fmt   = v => v !== null && v !== undefined ? parseFloat(v).toFixed(asset === 'XAUUSD' ? 2 : (asset === 'DXY' ? 3 : 0)) : '--';
+
+    el.innerHTML = `
+      <div class="signal-row">
+        <div class="signal-card ${rsiVal < 35 ? 'bullish' : rsiVal > 65 ? 'bearish' : 'neutral'}">
+          <span class="signal-label">RSI (14)</span>
+          <span class="signal-value">${rsiVal !== null ? rsiVal.toFixed(1) : '--'}</span>
+          <span class="signal-desc">${rsiVal < 35 ? 'Oversold' : rsiVal > 65 ? 'Overbought' : 'Neutral'}</span>
+        </div>
+        <div class="signal-card ${macdVal?.trend || 'neutral'}">
+          <span class="signal-label">MACD</span>
+          <span class="signal-value">${macdVal ? (macdVal.histogram > 0 ? '▲' : '▼') : '--'}</span>
+          <span class="signal-desc">${macdVal?.cross !== 'none' ? (macdVal.cross === 'golden' ? 'Golden Cross' : 'Death Cross') : (macdVal?.trend === 'bull' ? 'Bullish' : 'Bearish')}</span>
+        </div>
+        <div class="signal-card ${emaData?.trend || 'neutral'}">
+          <span class="signal-label">EMA Trend</span>
+          <span class="signal-value">${emaData?.trend === 'bull' ? '\u2b06' : emaData?.trend === 'bear' ? '\u2b07' : '\u2194'}</span>
+          <span class="signal-desc">${emaData?.trend === 'bull' ? 'Uptrend' : emaData?.trend === 'bear' ? 'Downtrend' : 'Sideways'}</span>
+        </div>
+      </div>
+      ${plan && plan.dir !== 'NEUTRAL' ? `
+      <div class="trade-plan-card">
+        <div class="plan-banner ${plan.dir.toLowerCase()}">
+          <div class="plan-dir ${plan.dir.toLowerCase()}">${plan.dir === 'BUY' ? '\u2b06' : '\u2b07'} ${plan.dir}</div>
+          <div class="plan-asset-tf"><span>${asset}</span><span>${tf}</span></div>
+          <div class="plan-rr-badge">R:R ${plan.rr}:1</div>
+        </div>
+        <div class="plan-prices">
+          <div class="plan-price-cell"><span class="plan-price-lbl">TP</span><span class="plan-price-val tp">${fmt(plan.tp)}</span></div>
+          <div class="plan-price-cell"><span class="plan-price-lbl">ENTRY</span><span class="plan-price-val entry">${fmt(plan.entry)}</span></div>
+          <div class="plan-price-cell"><span class="plan-price-lbl">SL</span><span class="plan-price-val sl">${fmt(plan.sl)}</span></div>
+        </div>
+        <div class="plan-actions">
+          <button class="plan-btn-use" onclick="App.useAnalysisPlan()">\u0e43\u0e0a\u0e49\u0e43\u0e19 Risk Calc</button>
+          <button class="plan-btn-save" onclick="App.saveCurrentPlan()">&uml;\u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e1c\u0e19</button>
+        </div>
+      </div>` : ''}
+    `;
+  },
+
+  useAnalysisPlan() {
+    const result = Analysis.state.result;
+    if (!result?.plan) { this.toast('\u0e27\u0e34\u0e40\u0e04\u0e23\u0e32\u0e30\u0e2b\u0e4c\u0e01\u0e48\u0e2d\u0e19', 'error'); return; }
+    Calculator.populateFromPlan(result.plan, Analysis.state.asset);
+  },
+
+  saveCurrentPlan() {
+    const result = Analysis.state.result;
+    if (!result?.plan) return;
+    const p = result.plan;
+    if (p.dir === 'NEUTRAL') { this.toast('\u0e44\u0e21\u0e48\u0e21\u0e35\u0e41\u0e1c\u0e19 (Neutral)', 'error'); return; }
+    // Populate and save
+    Calculator.populateFromPlan(p, Analysis.state.asset);
+    Calculator.saveTrade();
+  },
+
+  /* ── Toast ──────────────────────────────────────────────────────────────────── */
+  toast(msg, type = 'info') {
+    const root = document.getElementById('toast-root');
+    if (!root) return;
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    root.appendChild(t);
+    setTimeout(() => t.classList.add('show'), 10);
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3000);
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => App.init());

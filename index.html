@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ApexTrader Pro — ระบบวิเคราะห์การเทรดอัตโนมัติ</title>
+<meta name="description" content="ระบบวิเคราะห์การเทรด ICT/RSI/MACD/Fibonacci อัตโนมัติ XAUUSD BTC">
+<meta name="theme-color" content="#050810">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Background Effects -->
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+<div class="bg-orb orb-3"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════ -->
+<header class="app-header" id="app-header">
+  <div class="header-logo">
+    <div class="logo-mark">⬡</div>
+    <div class="logo-text">
+      <span class="logo-name">ApexTrader</span>
+      <span class="logo-tag">PRO</span>
+    </div>
+  </div>
+
+  <!-- Asset Selector -->
+  <div class="header-assets" id="header-assets">
+    <button class="asset-btn active" data-asset="XAUUSD" id="asset-xau">
+      <span class="asset-icon">🥇</span>
+      <span class="asset-label">XAU/USD</span>
+      <span class="asset-price" id="h-xau-price">--</span>
+    </button>
+    <button class="asset-btn" data-asset="BTCUSDT" id="asset-btc">
+      <span class="asset-icon">₿</span>
+      <span class="asset-label">BTC/USD</span>
+      <span class="asset-price" id="h-btc-price">--</span>
+    </button>
+    <button class="asset-btn" data-asset="DXY" id="asset-dxy">
+      <span class="asset-icon">💵</span>
+      <span class="asset-label">DXY</span>
+      <span class="asset-price" id="h-dxy-price">--</span>
+    </button>
+  </div>
+
+  <!-- TF + Status -->
+  <div class="header-right">
+    <div class="tf-group" id="global-tf-group">
+      <button class="tf-pill" data-tf="1m">1m</button>
+      <button class="tf-pill active" data-tf="5m">5m</button>
+      <button class="tf-pill" data-tf="15m">15m</button>
+      <button class="tf-pill" data-tf="1h">1h</button>
+    </div>
+    <div class="live-indicator">
+      <span class="live-dot"></span>
+      <span class="live-time" id="live-clock">--:--</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTENT AREA
+═══════════════════════════════════════════════════════════ -->
+<main class="app-main" id="app-main">
+
+  <!-- ────────────────────────────────────────────────
+       PANEL 1: DASHBOARD
+  ──────────────────────────────────────────────── -->
+  <section class="panel panel-active" id="panel-dashboard">
+    <div class="dashboard-grid">
+      
+      <!-- ฝั่งซ้าย: ราคาสด เรียงลงมา (Left Column) ชั้นละคู่เงิน -->
+      <div class="dashboard-left">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">💰</span>
+            ราคาสดเรียลไทม์
+          </h2>
+        </div>
+        <div class="price-strip vertical-list" id="price-strip">
+          <div class="price-chip" id="chip-xau">
+            <div class="chip-header">
+              <span class="chip-name">XAU/USD</span>
+              <span class="chip-badge badge-xau">GOLD</span>
+            </div>
+            <div class="chip-price text-gold" id="xau-price">กำลังโหลด...</div>
+            <div class="chip-footer">
+              <span class="chip-change" id="xau-change">--</span>
+              <span class="chip-src">Coinbase</span>
+            </div>
+          </div>
+          <div class="price-chip" id="chip-btc">
+            <div class="chip-header">
+              <span class="chip-name">BTC/USD</span>
+              <span class="chip-badge badge-btc">CRYPTO</span>
+            </div>
+            <div class="chip-price" id="btc-price">กำลังโหลด...</div>
+            <div class="chip-footer">
+              <span class="chip-change" id="btc-change">--</span>
+              <span class="chip-src">Binance WS</span>
+            </div>
+          </div>
+          <div class="price-chip" id="chip-dxy">
+            <div class="chip-header">
+              <span class="chip-name">DXY</span>
+              <span class="chip-badge badge-dxy">FOREX</span>
+            </div>
+            <div class="chip-price text-blue" id="dxy-price">--</div>
+            <div class="chip-footer">
+              <span class="chip-change" id="dxy-change">--</span>
+              <span class="chip-src">TradingView</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ฝั่งขวา: สัญญาณการเทรดล่าสุด (Right Column) -->
+      <div class="dashboard-right">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="title-icon">⚡</span>
+            สัญญาณล่าสุด
+          </h2>
+          <button class="btn-analyze" id="btn-quick-analyze">
+            <span>วิเคราะห์อัตโนมัติ</span>
+            <span class="btn-icon">→</span>
+          </button>
+        </div>
+
+        <div class="signal-cards" id="signal-cards">
+          <!-- Filled by analysis.js -->
+          <div class="signal-placeholder">
+            <div class="signal-placeholder-icon">📊</div>
+            <p>กดปุ่ม "วิเคราะห์อัตโนมัติ" หรือไปที่แผง <strong>Analysis</strong></p>
+            <p class="hint-text">ระบบจะดึงข้อมูลกราฟล่าสุดและคำนวณ RSI, MACD, Fibonacci, ICT ให้อัตโนมัติ</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────────
+       PANEL 2: AUTO ANALYSIS
+  ──────────────────────────────────────────────── -->
+  <section class="panel" id="panel-analysis">
+
+    <!-- Analysis Controls -->
+    <div class="analysis-controls">
+      <div class="control-row">
+        <select class="ctrl-select" id="an-asset">
+          <option value="BTCUSDT">BTC/USDT</option>
+          <option value="XAUUSD" selected>XAU/USD (ทองคำ)</option>
+          <option value="DXY">US Dollar Index (DXY)</option>
+        </select>
+        <div class="ctrl-tf-group" id="an-tf-group">
+          <button class="ctrl-tf active" data-tf="5m">5m</button>
+          <button class="ctrl-tf" data-tf="15m">15m</button>
+          <button class="ctrl-tf" data-tf="1h">1h</button>
+          <button class="ctrl-tf" data-tf="4h">4h</button>
+        </div>
+      </div>
+      <button class="btn-run-analysis" id="btn-run-analysis">
+        <span class="btn-run-icon">🔍</span>
+        <span id="btn-run-text">วิเคราะห์อัตโนมัติ</span>
+      </button>
+    </div>
+
+    <!-- Analysis Results -->
+    <div class="analysis-results" id="analysis-results">
+      <div class="analysis-empty">
+        <div class="empty-icon">🤖</div>
+        <h3>ยังไม่ได้วิเคราะห์</h3>
+        <p>เลือกสินทรัพย์และ Timeframe จากนั้นกด<br><strong>วิเคราะห์อัตโนมัติ</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────────
+       PANEL 3: CHART
+  ──────────────────────────────────────────────── -->
+  <section class="panel" id="panel-chart">
+    <div class="chart-toolbar">
+      <div class="chart-symbol-btns">
+        <button class="chart-sym-btn active" data-symbol="FX_IDC:XAUUSD" data-name="XAUUSD">XAUUSD</button>
+        <button class="chart-sym-btn" data-symbol="BINANCE:BTCUSDT" data-name="BTC">BTC</button>
+        <button class="chart-sym-btn" data-symbol="CAPITALCOM:DXY" data-name="DXY">DXY</button>
+      </div>
+      <div class="chart-tf-btns" id="chart-tf-group">
+        <button class="chart-tf-btn" data-interval="1">1m</button>
+        <button class="chart-tf-btn active" data-interval="5">5m</button>
+        <button class="chart-tf-btn" data-interval="15">15m</button>
+        <button class="chart-tf-btn" data-interval="60">1h</button>
+      </div>
+    </div>
+    <div class="chart-container" id="tv-main-chart">
+      <div class="tradingview-widget-container__widget"></div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────────────────────────
+       PANEL 4: RISK CALCULATOR
+  ──────────────────────────────────────────────── -->
+  <section class="panel" id="panel-risk">
+    <div class="risk-container">
+
+      <div class="risk-header">
+        <h2>💰 คำนวณความเสี่ยง</h2>
+        <p>Auto-populate จาก Analysis หรือกรอกเอง</p>
+      </div>
+
+      <div class="risk-form">
+        <div class="risk-row-2">
+          <div class="form-group">
+            <label>สินทรัพย์</label>
+            <select id="r-asset" class="ctrl-select">
+              <option value="XAUUSD">XAUUSD (Gold)</option>
+              <option value="BTCUSDT">BTCUSDT</option>
+              <option value="FOREX">Forex</option>
+              <option value="DXY">DXY (US Dollar Index)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ทิศทาง</label>
+            <div class="dir-toggle">
+              <button class="dir-btn buy active" data-dir="BUY" id="r-buy-btn">⬆ BUY</button>
+              <button class="dir-btn sell" data-dir="SELL" id="r-sell-btn">⬇ SELL</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-row-2">
+          <div class="form-group">
+            <label>เงินทุน ($)</label>
+            <input type="number" id="r-balance" value="50" class="form-input">
+          </div>
+          <div class="form-group">
+            <label>ความเสี่ยง (%)</label>
+            <div class="risk-pct-group">
+              <input type="number" id="r-risk-pct" value="5" step="0.1" min="0.1" max="10" class="form-input">
+              <div class="risk-pct-btns">
+                <button class="rpct-btn" data-v="1">1%</button>
+                <button class="rpct-btn" data-v="3">3%</button>
+                <button class="rpct-btn" data-v="5">5%</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-row-3">
+          <div class="form-group">
+            <label>Entry Price</label>
+            <input type="number" id="r-entry" step="any" class="form-input" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>Stop Loss</label>
+            <input type="number" id="r-sl" step="any" class="form-input" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>Take Profit</label>
+            <input type="number" id="r-tp" step="any" class="form-input" placeholder="0.00">
+          </div>
+        </div>
+
+        <button class="btn-calc-risk" id="btn-calc-risk">คำนวณ</button>
+      </div>
+
+      <!-- Results -->
+      <div class="risk-results" id="risk-results" style="display:none;">
+        <div class="rr-visual" id="rr-visual">
+          <div class="rr-zone tp-zone">
+            <span class="rr-zone-label">TP</span>
+            <span class="rr-zone-price" id="rr-tp-price">--</span>
+            <span class="rr-zone-pnl text-green" id="rr-tp-pnl">+$0</span>
+          </div>
+          <div class="rr-zone entry-zone">
+            <span class="rr-zone-label">ENTRY</span>
+            <span class="rr-zone-price" id="rr-entry-price">--</span>
+          </div>
+          <div class="rr-zone sl-zone">
+            <span class="rr-zone-label">SL</span>
+            <span class="rr-zone-price" id="rr-sl-price">--</span>
+            <span class="rr-zone-pnl text-red" id="rr-sl-pnl">-$0</span>
+          </div>
+        </div>
+        <div class="risk-result-grid">
+          <div class="result-box">
+            <span class="result-label">R:R Ratio</span>
+            <span class="result-value highlight" id="r-rr">--</span>
+          </div>
+          <div class="result-box">
+            <span class="result-label">Lot Size</span>
+            <span class="result-value text-cyan" id="r-lot">--</span>
+          </div>
+          <div class="result-box">
+            <span class="result-label">เงินเสี่ยง</span>
+            <span class="result-value text-red" id="r-risk-usd">--</span>
+          </div>
+          <div class="result-box">
+            <span class="result-label">กำไรเป้าหมาย</span>
+            <span class="result-value text-green" id="r-reward-usd">--</span>
+          </div>
+        </div>
+        <button class="btn-save-trade" id="btn-save-trade">บันทึกแผนการเทรด</button>
+      </div>
+
+      <!-- Trade Log -->
+      <div class="trade-log-section">
+        <div class="log-header">
+          <h3>📋 บันทึกแผน</h3>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="log-clear-btn" id="btn-clear-logs" onclick="Calculator.clearAllLogs()" style="background:none; border:none; color:var(--red); font-size:0.68rem; cursor:pointer; font-weight:700;">ล้างทั้งหมด</button>
+            <span class="log-count" id="log-count">0 รายการ</span>
+          </div>
+        </div>
+        <div class="trade-log" id="trade-log">
+          <div class="log-empty">ยังไม่มีแผนการเทรด</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BOTTOM NAVIGATION (Mobile/Tablet)
+═══════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bnav-btn active" data-panel="dashboard" id="bn-dashboard">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-label">หน้าหลัก</span>
+  </button>
+  <button class="bnav-btn" data-panel="analysis" id="bn-analysis">
+    <span class="bnav-icon">🔍</span>
+    <span class="bnav-label">วิเคราะห์</span>
+  </button>
+  <button class="bnav-btn" data-panel="chart" id="bn-chart">
+    <span class="bnav-icon">📈</span>
+    <span class="bnav-label">กราฟ</span>
+  </button>
+  <button class="bnav-btn" data-panel="risk" id="bn-risk">
+    <span class="bnav-icon">💰</span>
+    <span class="bnav-label">ความเสี่ยง</span>
+  </button>
+
+</nav>
+
+<!-- Toast -->
+<div id="toast-root"></div>
+
+<!-- Scripts -->
+<script src="js/indicators.js"></script>
+<script src="js/market.js"></script>
+<script src="js/analysis.js"></script>
+<script src="js/calculator.js"></script>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
