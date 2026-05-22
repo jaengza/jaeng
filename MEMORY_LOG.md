@@ -106,6 +106,20 @@ Spread Cost (USD) = Spread (Points) × Point Size × Contract Size × Lot Size
    - ถอด `1m` ออก → เหลือ 6 ปุ่ม: `5m`, `15m`, `1h`, `4h`, `1d`, `1w`
    - ปุ่มสมมาตรบนมือถือ (Mobile-First)
 
+### ✅ Version 4.1 — กู้คืนการโหลดราคาและใช้งาน ETHUSDT สมบูรณ์แบบ + อัปโหลดขึ้นระบบออนไลน์ทันที
+
+**คำขอจากผู้ใช้:**
+- เอากลับมา (ETH) แล้วอัฟโหลดให้ออนไลน์เลย
+
+**สิ่งที่ทำ:**
+- กู้คืนระบบข้อมูลตลาด ETHUSDT ใน `js/market.js` โดยเปิดใช้งาน REST API และ WebSocket เพื่อดึงราคาสดจริงจาก Binance อีกครั้ง
+- นำปุ่มสินทรัพย์ ETH/USD กลับคืนสู่ UI ทั้ง 4 จุดใน `index.html`: Header Assets, Dropdown Selector ใน Auto-Analysis, ปุ่มสลับใน Chart Panel, และ Asset Option ใน Risk Calculator
+- ปลดคอมเมนต์ฟังก์ชันใน `js/app.js` (บรรทัดที่ 153-160) เพื่อให้ราคาสดของ ETH อัปเดตและแสดงผลบน Dashboard การ์ดราคาหลักได้สมบูรณ์
+- อัปเดตการรองรับ ETHUSDT ในไฟล์ `session_state.json` (เพิ่มกลับใน `assets_supported` และกำหนด Exness Constants: minLot: 0.01, contractValue: 1, avgSpreadPts: 160)
+- รันชุดคำสั่งทดสอบระบบ `test_backtest_all.js` ในเครื่อง Local ผ่านฉลุย 17/17 ข้อทดสอบ ยืนยันความถูกต้องของสูตรคำนวณและขนาด Lot ขั้นต่ำ
+- ดำเนินการ Deploy อัปโหลดขึ้นระบบออนไลน์บน Git (`git push origin main`) สำเร็จ 100% เพื่อให้ออนไลน์พร้อมใช้งานทันที
+- รันสคริปต์ `backup_now.ps1` เพื่อทำสำรองข้อมูล (Backup) ทุกไฟล์โครงการย้อนหลังเข้าไดเรกทอรี Google Drive โดยอัตโนมัติ
+
 ---
 
 ### ✅ Version 4.0 — เปลี่ยนชื่อเป็น kesineTrader + ปรับล็อตต่ำสุด 0.01 + ปิดโหลดราคา ETH (ล่าสุด)
@@ -327,14 +341,14 @@ node test_analysis.js
 
 ## 📋 สถานะปัจจุบัน (Current Status)
 
-**Version ล่าสุด:** v3.9  
+**Version ล่าสุด:** v4.1  
 **สถานะ:** ✅ ทุกระบบทำงานถูกต้อง Unit Test 17/17 ผ่าน  
 **ระบบที่ทดสอบแล้ว:** RSI, MACD, ATR, Swing Points, Fibonacci OTE, ICT Order Block, Spread Cost, Lot Size, Backtest 30d All TF
 
 **สินทรัพย์ที่รองรับ:**
 - ✅ XAUUSD (ทองคำ)
 - ✅ BTCUSDT (Bitcoin)
-- ❌ ETHUSDT (Ethereum) — ปิดการโหลดราคาและถอดออกจากระบบเรียบร้อยแล้ว
+- ✅ ETHUSDT (Ethereum) — กู้คืนการโหลดข้อมูลราคาและฟังก์ชันการใช้งานแบบเรียลไทม์เรียบร้อยแล้ว
 
 ---
 
@@ -347,5 +361,5 @@ node test_analysis.js
 
 ---
 
-*📅 บันทึกโดย Antigravity AI ณ วันที่ 2026-05-22T15:00 ICT*  
-*🔍 ค้นหาด้วย keyword: kesineTrader, XAUUSD, BTCUSDT, Fibonacci, OTE, Exness, Lot, Spread, Backtest, v4.0*
+*📅 บันทึกโดย Antigravity AI ณ วันที่ 2026-05-22T15:10 ICT*  
+*🔍 ค้นหาด้วย keyword: kesineTrader, XAUUSD, BTCUSDT, ETHUSDT, Fibonacci, OTE, Exness, Lot, Spread, Backtest, v4.1*
