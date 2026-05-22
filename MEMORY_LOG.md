@@ -1,5 +1,5 @@
-# 🧠 MEMORY LOG — ApexTrader Hub (Conversation bea42f85)
-> บันทึกความทรงจำโปรเจกต์ฉบับสมบูรณ์ | อัปเดตล่าสุด: 2026-05-22T14:00 ICT  
+# 🧠 MEMORY LOG — kesineTrader (Conversation bea42f85)
+> บันทึกความทรงจำโปรเจกต์ฉบับสมบูรณ์ | อัปเดตล่าสุด: 2026-05-22T15:00 ICT  
 > **Conversation ID:** `bea42f85-bb7d-4f76-8140-91ebf4ea92c3`  
 > **Path โปรเจกต์:** `G:\My Drive\jaeng\`  
 > **Corpus:** `jaengza/jaeng`  
@@ -9,10 +9,10 @@
 
 ## 🎯 โปรเจกต์คืออะไร (Project Identity)
 
-**ชื่อ:** ApexTrader Hub  
+**ชื่อ:** kesineTrader  
 **ประเภท:** Premium Trading Dashboard WebApp (Offline/Local Build)  
 **Stack:** Vanilla HTML5 + CSS3 + ES6 JavaScript (ไม่มี framework หนัก)  
-**เป้าหมาย:** เครื่องมือวางแผนเทรดตามกลยุทธ์ ICT (Inner Circle Trader) รองรับ XAUUSD, BTCUSDT, ETHUSDT  
+**เป้าหมาย:** เครื่องมือวางแผนเทรดตามกลยุทธ์ ICT (Inner Circle Trader) รองรับ XAUUSD, BTCUSDT  
 **Theme:** Dark Cyberpunk Glassmorphism (ดำลึก + สีฟ้านีออน + ทอง)
 
 ---
@@ -108,7 +108,25 @@ Spread Cost (USD) = Spread (Points) × Point Size × Contract Size × Lot Size
 
 ---
 
+### ✅ Version 4.0 — เปลี่ยนชื่อเป็น kesineTrader + ปรับล็อตต่ำสุด 0.01 + ปิดโหลดราคา ETH (ล่าสุด)
+
+**คำขอจากผู้ใช้:**
+1. แก้ไขชื่อโปรแกรมเป็น **kesineTrader**
+2. กำหนดล็อตต่ำสุดเป็น **0.01** เท่านั้น (สำหรับทุกสินทรัพย์)
+3. ปิดการโหลดข้อมูลราคาของ **ETH (ETHUSDT)** และเอาออกจากหน้า UI
+
+**สิ่งที่ทำ:**
+- เปลี่ยนชื่อแบรนด์และสัญกรณ์ต่างๆ ในหน้าจอ, CSS และ JS เป็น **kesineTrader** ทั้งหมด
+- ปรับปรุงสูตรและตรรกะใน `js/calculator.js` และ `js/analysis.js` ให้สินทรัพย์ทุกตัวมี `minLot` ขั้นต่ำสุดคือ **0.01** และแสดงผลทศนิยม Lot เป็น 2 ตำแหน่งทั่วทั้งระบบ
+- แก้ไขโมดูล `js/market.js` ให้ระงับการทำงาน WebSocket และ REST API ของ ETHUSDT (ไม่โหลดข้อมูลราคา ETH ตามคำขอ)
+- ซ่อนและลบตัวเลือก ETH/USDT, กราฟ ETH, และปุ่มแสดงราคา ETH ออกจากหน้าเว็บ `index.html` เพื่อความสะอาดตา
+- ปรับปรุง Assertions ในไฟล์ทดสอบ `test_backtest_all.js` ให้ตรงกับพฤติกรรม Lot ต่ำสุดของ BTCUSDT ใหม่ (0.01 และสเปรดค่าจริง $0.21) และทดสอบรัน Unit Test ผ่าน 100% (17/17 ผ่านฉลุย)
+
+---
+
 ### ✅ Version 3.9 — Backtest 30 วัน + แก้บั๊กล็อต + ฐานทุน $50
+...
+(ดูประวัติรุ่นเก่าในเวอร์ชันก่อนหน้านี้ได้)
 
 **คำขอจากผู้ใช้:**
 1. ทดสอบระบบแบคเทสย้อนหลัง ทุก TF 30 วัน
@@ -241,11 +259,11 @@ if rawLot > 0 && rawLot < 0.01: lot = 0.01
 else: lot = floor(rawLot × 100) / 100
 ```
 
-**BTCUSDT / ETHUSDT:**
+**BTCUSDT:**
 ```
 rawLot = riskUsd / (slDist × 1)
-if rawLot > 0 && rawLot < 0.001: lot = 0.001
-else: lot = floor(rawLot × 1000) / 1000
+if rawLot > 0 && rawLot < 0.01: lot = 0.01
+else: lot = floor(rawLot × 100) / 100
 ```
 
 **FOREX:**
@@ -260,8 +278,8 @@ else: lot = floor(rawLot × 100) / 100
 Spread Cost (USD) = SpreadPoints × PointSize × ContractSize × Lot
 
 XAUUSD:  Spread × 0.01 × 100 × Lot  = Spread × Lot      (เช่น 200pt × 0.01 Lot = $2.00)
-BTCUSDT: Spread × 0.01 × 1   × Lot  = Spread × 0.01Lot  (เช่น 2150pt × 0.001 Lot = $0.02)
-ETHUSDT: Spread × 0.01 × 1   × Lot  = Spread × 0.01Lot  (เช่น 160pt × 0.03 Lot = $0.05)
+BTCUSDT: Spread × 0.01 × 1   × Lot  = Spread × 0.01Lot  (เช่น 2150pt × 0.01 Lot = $0.21)
+ETHUSDT: ปัจจุบันปิดการโหลดข้อมูลราคาและการเทรดในระบบเรียบร้อยแล้ว
 ```
 
 ### 4. Risk Management (ค่าเริ่มต้นที่ใช้)
@@ -316,7 +334,7 @@ node test_analysis.js
 **สินทรัพย์ที่รองรับ:**
 - ✅ XAUUSD (ทองคำ)
 - ✅ BTCUSDT (Bitcoin)
-- ✅ ETHUSDT (Ethereum) — เพิ่มในการสนทนานี้
+- ❌ ETHUSDT (Ethereum) — ปิดการโหลดราคาและถอดออกจากระบบเรียบร้อยแล้ว
 
 ---
 
@@ -329,5 +347,5 @@ node test_analysis.js
 
 ---
 
-*📅 บันทึกโดย Antigravity AI ณ วันที่ 2026-05-22T14:00 ICT*  
-*🔍 ค้นหาด้วย keyword: ApexTrader, XAUUSD, ETH, Fibonacci, OTE, Exness, Lot, Spread, Backtest, v3.9*
+*📅 บันทึกโดย Antigravity AI ณ วันที่ 2026-05-22T15:00 ICT*  
+*🔍 ค้นหาด้วย keyword: kesineTrader, XAUUSD, BTCUSDT, Fibonacci, OTE, Exness, Lot, Spread, Backtest, v4.0*

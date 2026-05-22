@@ -17,7 +17,7 @@ global.Market = {
   lows(candles)   { return candles.map(c => c.low); }
 };
 
-console.log('🔄 กำลังโหลดโมดูลและโค้ดคำนวณของ ApexTrader Pro...');
+console.log('🔄 กำลังโหลดโมดูลและโค้ดคำนวณของ kesineTrader Pro...');
 
 try {
   // Load Indicators module

@@ -1,6 +1,6 @@
-﻿{
-    "project":  "ApexTrader Hub",
-    "version":  "v3.9",
+{
+    "project":  "kesineTrader Hub",
+    "version":  "v4.0",
     "last_session":  {
                          "machine":  "LAPTOP-NHPCPQ9G",
                          "machine_alias":  "Notebook หลัก (เครื่อง 1)",
@@ -15,7 +15,7 @@
 
                                            ],
                          "unit_test_status":  "17/17 PASSED",
-                         "current_version":  "v3.9"
+                         "current_version":  "v4.0"
                      },
     "registered_machines":  [
                                 {
@@ -41,8 +41,7 @@
                            "risk_per_trade_usd":  2.5,
                            "assets_supported":  [
                                                     "XAUUSD",
-                                                    "BTCUSDT",
-                                                    "ETHUSDT"
+                                                    "BTCUSDT"
                                                 ],
                            "timeframes":  [
                                               "5m",
@@ -59,14 +58,9 @@
                                                                    "avgSpreadPts":  200
                                                                },
                                                     "BTCUSDT":  {
-                                                                    "minLot":  0.001,
-                                                                    "contractValue":  1,
-                                                                    "avgSpreadPts":  2150
-                                                                },
-                                                    "ETHUSDT":  {
                                                                     "minLot":  0.01,
                                                                     "contractValue":  1,
-                                                                    "avgSpreadPts":  160
+                                                                    "avgSpreadPts":  2150
                                                                 }
                                                 }
                        },

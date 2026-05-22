@@ -1,5 +1,5 @@
-# ⚡ ApexTrader Hub — WORKFLOW & DEVELOPER GUIDE
-> **Version:** v3.9 | **อัปเดตล่าสุด:** 2026-05-22  
+# ⚡ kesineTrader Hub — WORKFLOW & DEVELOPER GUIDE
+> **Version:** v4.0 | **อัปเดตล่าสุด:** 2026-05-22  
 > **Conversation ID:** `bea42f85-bb7d-4f76-8140-91ebf4ea92c3`  
 > **ไฟล์อ้างอิงร่วม:** [MEMORY_LOG.md](file:///g:/My%20Drive/jaeng/MEMORY_LOG.md) | [working_memory.md](file:///g:/My%20Drive/jaeng/working_memory.md)
 
@@ -157,9 +157,9 @@ G:\My Drive\jaeng\                          ← ROOT โปรเจกต์
 ## 🧠 2. สถาปัตยกรรมระบบ (Mind Map)
 
 ```
-                        ┌─────────────────────────────────────┐
-                        │         ApexTrader Hub              │
-                        │    Premium Trading Dashboard        │
+                         ┌─────────────────────────────────────┐
+                         │         kesineTrader Hub            │
+                         │    Premium Trading Dashboard        │
                         └──────────────┬──────────────────────┘
                                        │
               ┌────────────────────────┼────────────────────────┐
@@ -752,7 +752,7 @@ const ModuleName = {
 
 ### Mind Map: การต่อยอด
 ```
-                     [ApexTrader Hub v3.9]
+                     [kesineTrader Hub v4.0]
                             │
           ┌─────────────────┼─────────────────┐
           │                 │                 │

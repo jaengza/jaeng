@@ -1,6 +1,6 @@
-# 🚀 SESSION START PROTOCOL — ApexTrader Hub
+# 🚀 SESSION START PROTOCOL — kesineTrader Hub
 > **อ่านไฟล์นี้ทุกครั้งที่เริ่ม Session ใหม่**  
-> เวอร์ชัน: v1.0 | สร้าง: 2026-05-22
+> เวอร์ชัน: v4.0 | สร้าง: 2026-05-22
 
 ---
 
@@ -87,7 +87,7 @@ node test_backtest_all.js
 ☁️  Google Drive: [✅ Sync / ⚠️ ไม่พบ]
 📁  ไฟล์ครบ:      [X/10]
 🧪  Unit Test:    [17/17 ✅ / หรือ ERROR]
-📝  Version:      v3.9
+📝  Version:      v4.0
 🔧  งานค้าง:      [รายการถ้ามี / ไม่มี]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 พร้อมทำงานครับ!

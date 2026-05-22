@@ -1,10 +1,10 @@
 /* ==========================================================================
-   ApexTrader Pro — Risk & Position Size Calculator
+   kesineTrader — Risk & Position Size Calculator
    ========================================================================== */
 
 const Calculator = {
   tradeLog: [],
-  LOG_KEY: 'apextrader_log_v3',
+  LOG_KEY: 'kesinetrader_log_v3',
 
   init() {
     this.tradeLog = this.loadLog();
@@ -131,10 +131,10 @@ const Calculator = {
       }
     } else if (asset === 'BTCUSDT') {
       const rawLot = slDist > 0 ? riskUsd / slDist : 0;
-      if (rawLot > 0 && rawLot < 0.001) {
-        lot = 0.001;
+      if (rawLot > 0 && rawLot < 0.01) {
+        lot = 0.01;
       } else {
-        lot = Math.floor(rawLot * 1000) / 1000;
+        lot = Math.floor(rawLot * 100) / 100;
       }
     } else if (asset === 'ETHUSDT') {
       const rawLot = slDist > 0 ? riskUsd / slDist : 0;
@@ -174,7 +174,7 @@ const Calculator = {
     if (resultsEl) resultsEl.style.display = 'block';
 
     const priceDec = (asset === 'XAUUSD' || asset === 'ETHUSDT') ? 2 : (asset === 'DXY' ? 3 : 2);
-    const lotDec = asset === 'BTCUSDT' ? 3 : 2;
+    const lotDec = 2;
 
     this.setEl('rr-tp-price',   tp    ? tp.toFixed(priceDec) : '--');
     this.setEl('rr-entry-price', entry ? entry.toFixed(priceDec) : '--');
@@ -284,7 +284,7 @@ const Calculator = {
       return;
     }
       el.innerHTML = this.tradeLog.map(t => {
-        const lotDec = t.asset === 'BTCUSDT' ? 3 : 2;
+        const lotDec = 2;
         const priceDec = (t.asset === 'XAUUSD' || t.asset === 'ETHUSDT') ? 2 : (t.asset === 'DXY' ? 3 : 2);
         const spreadDisplay = t.spread !== undefined ? ` · Sp: -$${parseFloat(t.spread).toFixed(2)}` : '';
         return `

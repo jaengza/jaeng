@@ -1,16 +1,16 @@
 @echo off
 chcp 65001 > nul
-title ApexTrader Pro - GitHub Pages Deployer v3.4
+title kesineTrader - GitHub Pages Deployer v4.0
 color 0B
 
 echo =====================================================================
-echo    ApexTrader Pro — GitHub Pages Ultimate Deployer v3.4
+echo    kesineTrader — GitHub Pages Ultimate Deployer v4.0
 echo =====================================================================
 echo.
 echo สวัสดีครับคุณเทรดเดอร์! ผมได้จัดเตรียมความพร้อมและเซ็ตระบบ Git 
 echo ในเครื่องของท่านเรียบร้อยแล้วในทุกจุดครับ
 echo.
-echo ตอนนี้โค้ดทั้งหมด (ApexTrader Pro v3.4) ถูกบันทึกเข้าสู่ Git เรียบร้อยแล้ว
+echo ตอนนี้โค้ดทั้งหมด (kesineTrader v4.0) ถูกบันทึกเข้าสู่ Git เรียบร้อยแล้ว
 echo และพร้อมที่จะอัปโหลดขึ้นเซิร์ฟเวอร์ของ GitHub ของท่านแล้วครับ!
 echo.
 echo ---------------------------------------------------------------------

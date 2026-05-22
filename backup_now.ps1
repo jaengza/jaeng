@@ -1,4 +1,4 @@
-# ApexTrader Hub - Backup Script v2
+# kesineTrader Hub - Backup Script v4
 # Run: powershell -ExecutionPolicy Bypass -File backup_now.ps1
 
 $base  = "G:\My Drive\jaeng"
@@ -8,7 +8,7 @@ $bdir  = [System.IO.Path]::Combine($broot, "backup_" + $stamp)
 $sep   = "=" * 60
 
 Write-Host $sep
-Write-Host "  ApexTrader Hub --- BACKUP TO GOOGLE DRIVE"
+Write-Host "  kesineTrader Hub --- BACKUP TO GOOGLE DRIVE"
 Write-Host $sep
 Write-Host ""
 Write-Host "[1] Source : $base"

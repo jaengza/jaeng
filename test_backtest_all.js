@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 console.log('========================================================================');
-console.log('🧪 ApexTrader Pro — ระบบตรวจสอบสูตรคำนวณ & แบคเทสย้อนหลัง 30 วัน ทุก TF');
+console.log('🧪 kesineTrader Pro — ระบบตรวจสอบสูตรคำนวณ & แบคเทสย้อนหลัง 30 วัน ทุก TF');
 console.log('========================================================================\n');
 
 // ── 1. MOCK ENVIRONMENT ──────────────────────────────────────────────────
@@ -178,7 +178,7 @@ try {
   assert(xauPlan.lot === '0.01', `XAUUSD Lot Size ปัดเศษและจำกัดค่าขั้นต่ำ 0.01 Lot ถูกต้อง (คำนวณได้: ${xauPlan.lot})`);
   assert(xauPlan.estSpreadCost === '2.00', `XAUUSD Est. Spread Cost คำนวณถูกต้องตามฐานข้อมูล Exness (สเปรด: $${xauPlan.estSpreadCost})`);
 
-  // 2. BTCUSDT: Contract Size = 1, Spread = 2150 Points (Mult = 0.01), Min Lot = 0.001
+  // 2. BTCUSDT: Contract Size = 1, Spread = 2150 Points (Mult = 0.01), Min Lot = 0.01
   const btcPlan = Analysis.buildTradePlan({
     asset: 'BTCUSDT',
     tf: '1h',
@@ -195,10 +195,10 @@ try {
 
   // Risk = $2.50
   // SL distance = 59500 - 58000 = 1500
-  // Lot = 2.50 / 1500 = 0.00166 -> ปัดลงเหลือ 3 ตำแหน่ง = 0.001
-  // Est. Spread Cost = 2150 * 0.01 * 0.001 = $0.02
-  assert(btcPlan.lot === '0.001', `BTCUSDT Lot Size ปัดเศษลงเหลือทศนิยม 3 ตำแหน่งถูกต้อง (คำนวณได้: ${btcPlan.lot})`);
-  assert(btcPlan.estSpreadCost === '0.02', `BTCUSDT Est. Spread Cost คำนวณถูกต้อง (สเปรด: $${btcPlan.estSpreadCost})`);
+  // Lot = 2.50 / 1500 = 0.00166 -> Limit to Min Lot 0.01
+  // Est. Spread Cost = 2150 * 0.01 * 0.01 = $0.21
+  assert(btcPlan.lot === '0.01', `BTCUSDT Lot Size ปัดเศษและจำกัดค่าขั้นต่ำ 0.01 Lot ถูกต้อง (คำนวณได้: ${btcPlan.lot})`);
+  assert(btcPlan.estSpreadCost === '0.21', `BTCUSDT Est. Spread Cost คำนวณถูกต้อง (สเปรด: $${btcPlan.estSpreadCost})`);
 
   // 3. ETHUSDT: Contract Size = 1, Spread = 160 Points (Mult = 0.01), Min Lot = 0.01
   const ethPlan = Analysis.buildTradePlan({

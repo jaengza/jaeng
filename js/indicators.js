@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ApexTrader Pro — Technical Indicator Calculations
+   kesineTrader Pro — Technical Indicator Calculations
    All computed client-side from raw OHLCV data
    ========================================================================== */
 

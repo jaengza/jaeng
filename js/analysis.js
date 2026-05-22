@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ApexTrader Pro — Auto Analysis Engine
+   kesineTrader — Auto Analysis Engine
    Fetches OHLCV → runs all indicators → synthesizes trade plan
    ========================================================================== */
 
@@ -158,10 +158,10 @@ const Analysis = {
         }
       } else if (asset === 'BTCUSDT') {
         const rawLot = slDist > 0 ? riskUsd / slDist : 0;
-        if (rawLot > 0 && rawLot < 0.001) {
-          lotSize = 0.001;
+        if (rawLot > 0 && rawLot < 0.01) {
+          lotSize = 0.01;
         } else {
-          lotSize = Math.floor(rawLot * 1000) / 1000;
+          lotSize = Math.floor(rawLot * 100) / 100;
         }
       } else if (asset === 'ETHUSDT') {
         const rawLot = slDist > 0 ? riskUsd / slDist : 0;
@@ -256,7 +256,7 @@ const Analysis = {
       sl, 
       tp, 
       rr: rr > 0 ? rr.toFixed(2) : '--', 
-      lot: lotSize > 0 ? lotSize.toFixed(asset === 'BTCUSDT' ? 3 : 2) : '--', // Format based on asset type
+      lot: lotSize > 0 ? lotSize.toFixed(2) : '--', // Format based on asset type
       estSpreadCost: estSpreadCost > 0 ? estSpreadCost.toFixed(2) : '--', // Add estimated spread cost
       slPips: slDist > 0 ? slDist : null, 
       tpPips: tpDist > 0 ? tpDist : null, 

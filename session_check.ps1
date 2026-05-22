@@ -1,11 +1,11 @@
-# ApexTrader Hub - Session Start Check Script v2
+# kesineTrader Hub - Session Start Check Script v4
 # Run: powershell -ExecutionPolicy Bypass -File session_check.ps1
 
 $base = "G:\My Drive\jaeng"
 $sep  = "=" * 60
 
 Write-Host $sep
-Write-Host "  ApexTrader Hub --- SESSION START CHECK v3.9"
+Write-Host "  kesineTrader Hub --- SESSION START CHECK v4.0"
 Write-Host $sep
 
 # [1] Machine & Time

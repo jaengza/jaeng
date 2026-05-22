@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
-title ApexTrader Hub — Session Start Check
+title kesineTrader Hub — Session Start Check
 echo.
-echo Starting ApexTrader Hub Session Check...
+echo Starting kesineTrader Hub Session Check...
 echo.
 powershell -ExecutionPolicy Bypass -File "G:\My Drive\jaeng\session_check.ps1"
 echo.

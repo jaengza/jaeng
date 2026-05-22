@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ApexTrader Pro — Market Data Module
+   kesineTrader — Market Data Module
    Prices: Binance WS (BTC) + Coinbase REST (XAU)
    OHLCV:  Binance Klines (BTC) + Yahoo Finance GC=F (XAU)
    ========================================================================== */
@@ -18,7 +18,7 @@ const Market = {
   init() {
     this.fetchInitialPrices();
     this.connectBTCWebSocket();
-    this.connectETHWebSocket();
+    // this.connectETHWebSocket(); // ETH disabled
     this.startXAUPolling();
   },
 
@@ -49,7 +49,7 @@ const Market = {
 
   /* ── REST: Initial Prices ───────────────────────────────────────────────── */
   async fetchInitialPrices() {
-    await Promise.allSettled([this.fetchBTCRest(), this.fetchETHRest(), this.fetchXAU(), this.fetchDXY()]);
+    await Promise.allSettled([this.fetchBTCRest(), this.fetchXAU(), this.fetchDXY()]);
   },
 
   async fetchBTCRest() {
@@ -274,7 +274,7 @@ const Market = {
     if (asset === 'BTCUSDT') {
       data = await this.fetchBinanceKlines('BTCUSDT', tf, limit);
     } else if (asset === 'ETHUSDT') {
-      data = await this.fetchBinanceKlines('ETHUSDT', tf, limit);
+      return []; // ETH price loading disabled
     } else if (asset === 'XAUUSD') {
       // Try Yahoo Finance first
       data = await this.fetchYahooFinanceOHLCV('GC%3DF', tf, limit);

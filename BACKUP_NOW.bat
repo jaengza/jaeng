@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
-title ApexTrader Hub — Backup Now
+title kesineTrader Hub — Backup Now
 echo.
-echo Starting ApexTrader Hub Backup...
+echo Starting kesineTrader Hub Backup...
 echo.
 powershell -ExecutionPolicy Bypass -File "G:\My Drive\jaeng\backup_now.ps1"
 echo.

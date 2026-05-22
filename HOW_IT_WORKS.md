@@ -1,4 +1,4 @@
-# ApexTrader Pro — คู่มือการทำงาน
+# kesineTrader Pro — คู่มือการทำงาน
 
 > ระบบวิเคราะห์การเทรดอัตโนมัติ | XAUUSD · BTC · DXY
 
@@ -7,7 +7,7 @@
 ## 📁 โครงสร้างไฟล์
 
 ```
-ApexTrader Pro/
+kesineTrader/
 ├── index.html              ← หน้าหลัก (5 panels)
 ├── css/
 │   └── style.css           ← Design system ทั้งหมด (variables, components, responsive)
