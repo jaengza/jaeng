@@ -6,8 +6,9 @@
 
 const Market = {
   /* ── State ──────────────────────────────────────────────────────────────── */
-  prices: { xau: 0, btc: 0, dxy: 0, xauPct: 0, btcPct: 0, dxyPct: 0 },
+  prices: { xau: 0, btc: 0, eth: 0, dxy: 0, xauPct: 0, btcPct: 0, ethPct: 0, dxyPct: 0 },
   btcWS: null,
+  ethWS: null,
   xauPollTimer: null,
   xauPrev: 0,
   callbacks: { priceUpdate: [] },
@@ -17,6 +18,7 @@ const Market = {
   init() {
     this.fetchInitialPrices();
     this.connectBTCWebSocket();
+    this.connectETHWebSocket();
     this.startXAUPolling();
   },
 
@@ -47,7 +49,7 @@ const Market = {
 
   /* ── REST: Initial Prices ───────────────────────────────────────────────── */
   async fetchInitialPrices() {
-    await Promise.allSettled([this.fetchBTCRest(), this.fetchXAU(), this.fetchDXY()]);
+    await Promise.allSettled([this.fetchBTCRest(), this.fetchETHRest(), this.fetchXAU(), this.fetchDXY()]);
   },
 
   async fetchBTCRest() {
@@ -65,6 +67,24 @@ const Market = {
         this.prices.btc = parseFloat(d.data.amount);
         this._emit();
       } catch (e) { console.warn('[BTC]', e.message); }
+    }
+  },
+
+  async fetchETHRest() {
+    try {
+      const r = await this.fetchWithTimeout('https://api.binance.com/api/v3/ticker/24hr?symbol=ETHUSDT', {}, 2000);
+      if (!r.ok) throw new Error();
+      const d = await r.json();
+      this.prices.eth    = parseFloat(d.lastPrice);
+      this.prices.ethPct = parseFloat(d.priceChangePercent);
+      this._emit();
+    } catch {
+      try {
+        const r = await this.fetchWithTimeout('https://api.coinbase.com/v2/prices/ETH-USD/spot', {}, 2000);
+        const d = await r.json();
+        this.prices.eth = parseFloat(d.data.amount);
+        this._emit();
+      } catch (e) { console.warn('[ETH]', e.message); }
     }
   },
 
@@ -209,6 +229,27 @@ const Market = {
     }
   },
 
+  connectETHWebSocket() {
+    try {
+      if (this.ethWS) { this.ethWS.close(); this.ethWS = null; }
+      this.ethWS = new WebSocket('wss://stream.binance.com:9443/ws/ethusdt@ticker');
+      this.ethWS.onmessage = e => {
+        const d = JSON.parse(e.data);
+        const price = parseFloat(d.c);
+        const pct   = parseFloat(d.P);
+        if (price > 0) {
+          this.prices.eth    = price;
+          this.prices.ethPct = pct;
+          this._emit();
+        }
+      };
+      this.ethWS.onclose = () => setTimeout(() => this.connectETHWebSocket(), 5000);
+      this.ethWS.onerror = () => {};
+    } catch (e) {
+      setInterval(() => this.fetchETHRest(), 15000);
+    }
+  },
+
   /* ── OHLCV Data Fetchers ─────────────────────────────────────────────────── */
 
   /**
@@ -232,6 +273,8 @@ const Market = {
     let data = [];
     if (asset === 'BTCUSDT') {
       data = await this.fetchBinanceKlines('BTCUSDT', tf, limit);
+    } else if (asset === 'ETHUSDT') {
+      data = await this.fetchBinanceKlines('ETHUSDT', tf, limit);
     } else if (asset === 'XAUUSD') {
       // Try Yahoo Finance first
       data = await this.fetchYahooFinanceOHLCV('GC%3DF', tf, limit);
@@ -259,7 +302,7 @@ const Market = {
 
   /* Binance Klines — BTC (and any USDT pair) */
   async fetchBinanceKlines(symbol, tf, limit = 200) {
-    const tfMap = { '1m':'1m','5m':'5m','15m':'15m','1h':'1h','4h':'4h','1d':'1d' };
+    const tfMap = { '1m':'1m','5m':'5m','15m':'15m','1h':'1h','4h':'4h','1d':'1d','1w':'1w' };
     const interval = tfMap[tf] || '5m';
     try {
       const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`;
@@ -282,8 +325,8 @@ const Market = {
 
   /* Yahoo Finance — XAU/USD via GC=F (Gold Futures) */
   async fetchYahooFinanceOHLCV(symbol, tf, limit = 200) {
-    const tfMap = { '1m':'2m','5m':'5m','15m':'15m','1h':'1h','4h':'1h','1d':'1d' };
-    const rangeMap = { '1m':'1d','5m':'5d','15m':'30d','1h':'60d','4h':'60d','1d':'1y' };
+    const tfMap = { '1m':'2m','5m':'5m','15m':'15m','1h':'1h','4h':'1h','1d':'1d','1w':'1wk' };
+    const rangeMap = { '1m':'1d','5m':'5d','15m':'30d','1h':'60d','4h':'60d','1d':'1y','1w':'5y' };
     const interval = tfMap[tf] || '5m';
     const range    = rangeMap[tf] || '5d';
     try {
@@ -339,7 +382,7 @@ const Market = {
   /* Simulated XAU OHLCV (fallback when both sources fail) */
   simulateXAUOHLCV(tf, limit = 100) {
     const price = this.prices.xau || 2350;
-    const tfMs  = { '1m':60000,'5m':300000,'15m':900000,'1h':3600000,'4h':14400000,'1d':86400000 };
+    const tfMs  = { '1m':60000,'5m':300000,'15m':900000,'1h':3600000,'4h':14400000,'1d':86400000,'1w':604800000 };
     const step  = tfMs[tf] || 300000;
     const vol   = price * 0.0015; // ~0.15% volatility per bar
     const candles = new Array(limit);
@@ -371,7 +414,7 @@ const Market = {
   /* Simulated DXY OHLCV (fallback when both sources fail) */
   simulateDXYOHLCV(tf, limit = 100) {
     const price = this.prices.dxy || 104.50;
-    const tfMs  = { '1m':60000,'5m':300000,'15m':900000,'1h':3600000,'4h':14400000,'1d':86400000 };
+    const tfMs  = { '1m':60000,'5m':300000,'15m':900000,'1h':3600000,'4h':14400000,'1d':86400000,'1w':604800000 };
     const step  = tfMs[tf] || 300000;
     const vol   = price * 0.0008; // DXY has lower volatility than Gold (~0.08%)
     const candles = new Array(limit);

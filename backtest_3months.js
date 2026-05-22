@@ -204,7 +204,8 @@ async function runBacktest() {
       }
 
       if (triggered) {
-        const riskUsd = balance * riskPct / 100;
+        // คำนวณความเสี่ยงอิงจากเงินเริ่มต้น 50 ดอลลาร์คงที่ทุกไม้ เพื่อความถูกต้องและสมจริงของกลยุทธ์
+        const riskUsd = 50 * riskPct / 100;
         
         // Calculate Lot with minimum 0.01 limit
         const slDist = Math.abs(entryPrice - plan.sl);

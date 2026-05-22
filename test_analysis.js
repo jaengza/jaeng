@@ -211,7 +211,8 @@ async function runTest() {
       console.log(`   ├─ ระยะตัดขาดทุน (SL Distance)  : \$${plan.slPips.toFixed(2)}`);
       console.log(`   ├─ อัตรากำไรต่อขาดทุน (Risk Reward): ${plan.rr} : 1`);
       console.log(`   ├─ พอร์ตตัวอย่าง: \$10,000 (ยอมรับความเสี่ยง 1% = \$100)`);
-      console.log(`   └─ ขนาดสัญญาที่แนะนำ (Suggested Lot): ${plan.lot} lot`);
+      console.log(`   ├─ ขนาดสัญญาที่แนะนำ (Suggested Lot): ${plan.lot} lot`);
+      console.log(`   └─ ต้นทุนสเปรดโดยประมาณ Exness: \$${plan.estSpreadCost}`);
 
       // Verify Gold Contract rule: 0.01 lot moves $1 = $1 PnL
       const lotVal = parseFloat(plan.lot);

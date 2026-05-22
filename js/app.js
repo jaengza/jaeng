@@ -150,6 +150,11 @@ const App = {
       this.updateChip('btc-change', prices.btcPct, null, null, '%');
       this.updateChip('h-btc-price', prices.btc, 0);
     }
+    if (prices.eth > 0) {
+      this.updateChip('eth-price', prices.eth, 2, 'text-purple');
+      this.updateChip('eth-change', prices.ethPct, null, null, '%');
+      this.updateChip('h-eth-price', prices.eth, 2);
+    }
     if (prices.dxy > 0) {
       this.updateChip('dxy-price', prices.dxy, 3, 'text-blue');
       this.updateChip('dxy-change', prices.dxyPct, null, null, '%');
@@ -191,7 +196,7 @@ const App = {
         document.querySelectorAll('.chart-sym-btn').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active');
         const symbol   = e.currentTarget.dataset.symbol;
-        const interval = parseInt(document.querySelector('.chart-tf-btn.active')?.dataset.interval || 5);
+        const interval = document.querySelector('.chart-tf-btn.active')?.dataset.interval || '5';
         this.loadMainChart(symbol, interval);
       });
     });
@@ -201,7 +206,7 @@ const App = {
         document.querySelectorAll('.chart-tf-btn').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active');
         const symbol   = document.querySelector('.chart-sym-btn.active')?.dataset.symbol || 'FX_IDC:XAUUSD';
-        const interval = parseInt(e.currentTarget.dataset.interval);
+        const interval = e.currentTarget.dataset.interval;
         this.loadMainChart(symbol, interval);
       });
     });
@@ -246,7 +251,7 @@ const App = {
     const { rsiVal, macdVal, emaData, score, plan } = result;
     const asset = Analysis.state.asset;
     const tf    = Analysis.state.tf;
-    const fmt   = v => v !== null && v !== undefined ? parseFloat(v).toFixed(asset === 'XAUUSD' ? 2 : (asset === 'DXY' ? 3 : 0)) : '--';
+    const fmt   = v => v !== null && v !== undefined ? parseFloat(v).toFixed((asset === 'XAUUSD' || asset === 'ETHUSDT') ? 2 : (asset === 'DXY' ? 3 : 0)) : '--';
 
     el.innerHTML = `
       <div class="signal-row">

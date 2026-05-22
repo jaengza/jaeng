@@ -1,0 +1,139 @@
+﻿{
+    "project":  "ApexTrader Hub",
+    "version":  "v3.9",
+    "last_session":  {
+                         "machine":  "LAPTOP-NHPCPQ9G",
+                         "machine_alias":  "Notebook หลัก (เครื่อง 1)",
+                         "timestamp":  "2026-05-22T14:23:59+07:00",
+                         "work_done":  [
+                                           "สร้าง MEMORY_LOG.md — บันทึกประวัติการพัฒนาทั้งหมด",
+                                           "สร้าง WORKFLOW.md — คู่มือนักพัฒนาฉบับสมบูรณ์",
+                                           "สร้าง SESSION_START.md — Protocol เริ่ม Session",
+                                           "สร้าง session_state.json — ไฟล์นี้"
+                                       ],
+                         "pending_tasks":  [
+
+                                           ],
+                         "unit_test_status":  "17/17 PASSED",
+                         "current_version":  "v3.9"
+                     },
+    "registered_machines":  [
+                                {
+                                    "computer_name":  "LAPTOP-NHPCPQ9G",
+                                    "alias":  "Notebook หลัก (เครื่อง 1)",
+                                    "os":  "Windows 11 Home Single Language 10.0.26100",
+                                    "gdrive_path":  "G:\\My Drive\\jaeng",
+                                    "first_seen":  "2026-05-22",
+                                    "status":  "active"
+                                },
+                                {
+                                    "computer_name":  "UNKNOWN",
+                                    "alias":  "Notebook สำรอง (เครื่อง 2)",
+                                    "os":  "ยังไม่ได้ลงทะเบียน",
+                                    "gdrive_path":  "TBD",
+                                    "first_seen":  null,
+                                    "status":  "pending"
+                                }
+                            ],
+    "project_config":  {
+                           "base_capital":  50,
+                           "risk_percent":  5,
+                           "risk_per_trade_usd":  2.5,
+                           "assets_supported":  [
+                                                    "XAUUSD",
+                                                    "BTCUSDT",
+                                                    "ETHUSDT"
+                                                ],
+                           "timeframes":  [
+                                              "5m",
+                                              "15m",
+                                              "1h",
+                                              "4h",
+                                              "1d",
+                                              "1w"
+                                          ],
+                           "exness_constants":  {
+                                                    "XAUUSD":  {
+                                                                   "minLot":  0.01,
+                                                                   "contractValue":  100,
+                                                                   "avgSpreadPts":  200
+                                                               },
+                                                    "BTCUSDT":  {
+                                                                    "minLot":  0.001,
+                                                                    "contractValue":  1,
+                                                                    "avgSpreadPts":  2150
+                                                                },
+                                                    "ETHUSDT":  {
+                                                                    "minLot":  0.01,
+                                                                    "contractValue":  1,
+                                                                    "avgSpreadPts":  160
+                                                                }
+                                                }
+                       },
+    "files_manifest":  {
+                           "index.html":  {
+                                              "role":  "Main HTML",
+                                              "critical":  true
+                                          },
+                           "css/style.css":  {
+                                                 "role":  "Design System",
+                                                 "critical":  true
+                                             },
+                           "js/app.js":  {
+                                             "role":  "Coordinator",
+                                             "critical":  true
+                                         },
+                           "js/market.js":  {
+                                                "role":  "Data Layer",
+                                                "critical":  true
+                                            },
+                           "js/indicators.js":  {
+                                                    "role":  "Math Engine",
+                                                    "critical":  true
+                                                },
+                           "js/analysis.js":  {
+                                                  "role":  "Brain",
+                                                  "critical":  true
+                                              },
+                           "js/calculator.js":  {
+                                                    "role":  "Risk Tool",
+                                                    "critical":  true
+                                                },
+                           "MEMORY_LOG.md":  {
+                                                 "role":  "Version History",
+                                                 "critical":  true
+                                             },
+                           "WORKFLOW.md":  {
+                                               "role":  "Dev Guide",
+                                               "critical":  true
+                                           },
+                           "SESSION_START.md":  {
+                                                    "role":  "Session Protocol",
+                                                    "critical":  true
+                                                },
+                           "session_state.json":  {
+                                                      "role":  "State Tracker",
+                                                      "critical":  true
+                                                  },
+                           "working_memory.md":  {
+                                                     "role":  "Architecture Doc",
+                                                     "critical":  false
+                                                 },
+                           "HOW_IT_WORKS.md":  {
+                                                   "role":  "How-To",
+                                                   "critical":  false
+                                               },
+                           "test_backtest_all.js":  {
+                                                        "role":  "Unit Tests",
+                                                        "critical":  true
+                                                    },
+                           "backtest_3months.js":  {
+                                                       "role":  "Backtest Script",
+                                                       "critical":  false
+                                                   },
+                           "test_analysis.js":  {
+                                                    "role":  "Analysis Tests",
+                                                    "critical":  false
+                                                }
+                       }
+}

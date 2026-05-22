@@ -32,6 +32,7 @@ const Analysis = {
       let livePrice = 0;
       if (asset === 'XAUUSD') livePrice = Market.prices.xau;
       else if (asset === 'BTCUSDT') livePrice = Market.prices.btc;
+      else if (asset === 'ETHUSDT') livePrice = Market.prices.eth;
       else if (asset === 'DXY') livePrice = Market.prices.dxy;
 
       if (livePrice > 0 && candles.length > 0) {
@@ -98,7 +99,7 @@ const Analysis = {
     const ote  = fiboLevels ? fiboLevels.find(f => f.isOte) : null; // 70.5% Fibo
 
     let entry = last, sl = null, tp = null;
-    let slDist = 0, tpDist = 0, rr = 0, lotSize = 0;
+    let slDist = 0, tpDist = 0, rr = 0, lotSize = 0, estSpreadCost = 0;
 
     if (dir !== 'NEUTRAL') {
       if (dir === 'BUY') {
@@ -149,22 +150,52 @@ const Analysis = {
       // contract standardized sizing
       if (asset === 'XAUUSD') {
         // Gold: 1 standard lot = 100 oz. 0.01 lot moves $1 = $1 PnL
-        lotSize = slDist > 0 ? riskUsd / (slDist * 100) : 0;
-        if (lotSize > 0 && lotSize < 0.01) {
-          lotSize = 0.01; // Minimum lot size for XAUUSD is 0.01
+        const rawLot = slDist > 0 ? riskUsd / (slDist * 100) : 0;
+        if (rawLot > 0 && rawLot < 0.01) {
+          lotSize = 0.01;
+        } else {
+          lotSize = Math.floor(rawLot * 100) / 100;
         }
       } else if (asset === 'BTCUSDT') {
-        lotSize = slDist > 0 ? riskUsd / slDist : 0;
-        if (lotSize > 0 && lotSize < 0.001) {
-          lotSize = 0.001; // Minimum lot size for BTC
+        const rawLot = slDist > 0 ? riskUsd / slDist : 0;
+        if (rawLot > 0 && rawLot < 0.001) {
+          lotSize = 0.001;
+        } else {
+          lotSize = Math.floor(rawLot * 1000) / 1000;
+        }
+      } else if (asset === 'ETHUSDT') {
+        const rawLot = slDist > 0 ? riskUsd / slDist : 0;
+        if (rawLot > 0 && rawLot < 0.01) {
+          lotSize = 0.01;
+        } else {
+          lotSize = Math.floor(rawLot * 100) / 100;
         }
       } else {
         // Forex / others
-        lotSize = slDist > 0 ? riskUsd / (slDist * 10) : 0;
-        if (lotSize > 0 && lotSize < 0.01) {
-          lotSize = 0.01; // Minimum lot size for Forex
+        const rawLot = slDist > 0 ? riskUsd / (slDist * 10) : 0;
+        if (rawLot > 0 && rawLot < 0.01) {
+          lotSize = 0.01;
+        } else {
+          lotSize = Math.floor(rawLot * 100) / 100;
         }
       }
+
+      // Calculate Estimated Spread Cost based on Exness averages and Contract Size
+      let spreadVal = 15; // default Forex
+      let spreadMult = 10.0;
+      
+      if (asset === 'XAUUSD') {
+        spreadVal = 200;
+        spreadMult = 1.0;
+      } else if (asset === 'BTCUSDT' || asset === 'ETHUSDT') {
+        spreadVal = asset === 'BTCUSDT' ? 2150 : 160;
+        spreadMult = 0.01;
+      } else if (asset === 'DXY') {
+        spreadVal = 15;
+        spreadMult = 1.0;
+      }
+      
+      estSpreadCost = spreadVal * spreadMult * lotSize;
     }
 
     // 5. Probability Forecasting & DXY Gold Correlation Calculation
@@ -225,7 +256,8 @@ const Analysis = {
       sl, 
       tp, 
       rr: rr > 0 ? rr.toFixed(2) : '--', 
-      lot: lotSize > 0 ? lotSize.toFixed(3) : '--', // display with 3 decimal places for high accuracy
+      lot: lotSize > 0 ? lotSize.toFixed(asset === 'BTCUSDT' ? 3 : 2) : '--', // Format based on asset type
+      estSpreadCost: estSpreadCost > 0 ? estSpreadCost.toFixed(2) : '--', // Add estimated spread cost
       slPips: slDist > 0 ? slDist : null, 
       tpPips: tpDist > 0 ? tpDist : null, 
       atr, 
@@ -240,7 +272,7 @@ const Analysis = {
     const container = document.getElementById('analysis-results');
     if (!container) return;
 
-    const dec = this.state.asset === 'XAUUSD' ? 2 : (this.state.asset === 'DXY' ? 3 : 0);
+    const dec = (this.state.asset === 'XAUUSD' || this.state.asset === 'ETHUSDT') ? 2 : (this.state.asset === 'DXY' ? 3 : 0);
     const fmt = v => (v !== null && v !== undefined) ? v.toFixed(dec) : '--';
 
     // RSI color
@@ -398,14 +430,18 @@ const Analysis = {
             <span class="plan-price-pnl pnl-neg">-${r.plan.slPips ? r.plan.slPips.toFixed(2) : '--'}</span>
           </div>
         </div>
-        <div class="plan-lot-row">
+        <div class="plan-lot-row" style="grid-template-columns: repeat(3, 1fr);">
           <div class="plan-lot-cell">
             <span class="plan-lot-label">ATR (Volatility)</span>
             <span class="plan-lot-value">${r.plan.atr ? r.plan.atr.toFixed(2) : '--'}</span>
           </div>
           <div class="plan-lot-cell">
             <span class="plan-lot-label">Suggested Lot</span>
-            <span class="plan-lot-value">${r.plan.lot || '--'}</span>
+            <span class="plan-lot-value" style="color: var(--cyan);">${r.plan.lot || '--'}</span>
+          </div>
+          <div class="plan-lot-cell" style="border-left: 1px solid var(--border);">
+            <span class="plan-lot-label" style="color: #a78bfa;">Est. Spread Cost</span>
+            <span class="plan-lot-value" style="color: #a78bfa; font-weight: 800;">$${r.plan.estSpreadCost || '--'}</span>
           </div>
         </div>
         <div class="plan-actions">

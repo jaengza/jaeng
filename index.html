@@ -41,6 +41,11 @@
       <span class="asset-label">BTC/USD</span>
       <span class="asset-price" id="h-btc-price">--</span>
     </button>
+    <button class="asset-btn" data-asset="ETHUSDT" id="asset-eth">
+      <span class="asset-icon">🔷</span>
+      <span class="asset-label">ETH/USD</span>
+      <span class="asset-price" id="h-eth-price">--</span>
+    </button>
     <button class="asset-btn" data-asset="DXY" id="asset-dxy">
       <span class="asset-icon">💵</span>
       <span class="asset-label">DXY</span>
@@ -55,6 +60,9 @@
       <button class="tf-pill active" data-tf="5m">5m</button>
       <button class="tf-pill" data-tf="15m">15m</button>
       <button class="tf-pill" data-tf="1h">1h</button>
+      <button class="tf-pill" data-tf="4h">4h</button>
+      <button class="tf-pill" data-tf="1d">1d</button>
+      <button class="tf-pill" data-tf="1w">1w</button>
     </div>
     <div class="live-indicator">
       <span class="live-dot"></span>
@@ -102,6 +110,17 @@
             <div class="chip-price" id="btc-price">กำลังโหลด...</div>
             <div class="chip-footer">
               <span class="chip-change" id="btc-change">--</span>
+              <span class="chip-src">Binance WS</span>
+            </div>
+          </div>
+          <div class="price-chip" id="chip-eth">
+            <div class="chip-header">
+              <span class="chip-name">ETH/USD</span>
+              <span class="chip-badge badge-eth">CRYPTO</span>
+            </div>
+            <div class="chip-price text-purple" id="eth-price">กำลังโหลด...</div>
+            <div class="chip-footer">
+              <span class="chip-change" id="eth-change">--</span>
               <span class="chip-src">Binance WS</span>
             </div>
           </div>
@@ -155,6 +174,7 @@
       <div class="control-row">
         <select class="ctrl-select" id="an-asset">
           <option value="BTCUSDT">BTC/USDT</option>
+          <option value="ETHUSDT">ETH/USDT</option>
           <option value="XAUUSD" selected>XAU/USD (ทองคำ)</option>
           <option value="DXY">US Dollar Index (DXY)</option>
         </select>
@@ -163,6 +183,8 @@
           <button class="ctrl-tf" data-tf="15m">15m</button>
           <button class="ctrl-tf" data-tf="1h">1h</button>
           <button class="ctrl-tf" data-tf="4h">4h</button>
+          <button class="ctrl-tf" data-tf="1d">1d</button>
+          <button class="ctrl-tf" data-tf="1w">1w</button>
         </div>
       </div>
       <button class="btn-run-analysis" id="btn-run-analysis">
@@ -189,13 +211,16 @@
       <div class="chart-symbol-btns">
         <button class="chart-sym-btn active" data-symbol="FX_IDC:XAUUSD" data-name="XAUUSD">XAUUSD</button>
         <button class="chart-sym-btn" data-symbol="BINANCE:BTCUSDT" data-name="BTC">BTC</button>
+        <button class="chart-sym-btn" data-symbol="BINANCE:ETHUSDT" data-name="ETH">ETH</button>
         <button class="chart-sym-btn" data-symbol="CAPITALCOM:DXY" data-name="DXY">DXY</button>
       </div>
       <div class="chart-tf-btns" id="chart-tf-group">
-        <button class="chart-tf-btn" data-interval="1">1m</button>
         <button class="chart-tf-btn active" data-interval="5">5m</button>
         <button class="chart-tf-btn" data-interval="15">15m</button>
         <button class="chart-tf-btn" data-interval="60">1h</button>
+        <button class="chart-tf-btn" data-interval="240">4h</button>
+        <button class="chart-tf-btn" data-interval="D">1d</button>
+        <button class="chart-tf-btn" data-interval="W">1w</button>
       </div>
     </div>
     <div class="chart-container" id="tv-main-chart">
@@ -221,6 +246,7 @@
             <select id="r-asset" class="ctrl-select">
               <option value="XAUUSD">XAUUSD (Gold)</option>
               <option value="BTCUSDT">BTCUSDT</option>
+              <option value="ETHUSDT">ETHUSDT</option>
               <option value="FOREX">Forex</option>
               <option value="DXY">DXY (US Dollar Index)</option>
             </select>
@@ -267,7 +293,19 @@
           </div>
         </div>
 
-        <button class="btn-calc-risk" id="btn-calc-risk">คำนวณ</button>
+        <div class="risk-row-2">
+          <div class="form-group">
+            <label>สเปรด Exness (จุด)</label>
+            <input type="number" id="r-spread" value="200" class="form-input" placeholder="ป้อนจุดสเปรด Exness">
+          </div>
+          <div class="form-group" style="display: flex; align-items: flex-end;">
+            <div class="exness-badge" style="font-size: 0.65rem; color: var(--text-2); background: var(--bg-glass); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; width: 100%; text-align: center; font-weight: 500; height: 38px; display: flex; align-items: center; justify-content: center; border-color: rgba(167,139,250,0.15);">
+              🔷 Exness Spread Cost Calc
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-calc-risk" id="btn-calc-risk">คำนวณขนาด Lot & ความเสี่ยง ⚡</button>
       </div>
 
       <!-- Results -->
@@ -304,6 +342,14 @@
           <div class="result-box">
             <span class="result-label">กำไรเป้าหมาย</span>
             <span class="result-value text-green" id="r-reward-usd">--</span>
+          </div>
+          <div class="result-box">
+            <span class="result-label">ต้นทุนสเปรด Exness</span>
+            <span class="result-value text-purple" id="r-spread-cost">--</span>
+          </div>
+          <div class="result-box">
+            <span class="result-label">กำไรสุทธิ (หักสเปรด)</span>
+            <span class="result-value text-gold" id="r-net-reward">--</span>
           </div>
         </div>
         <button class="btn-save-trade" id="btn-save-trade">บันทึกแผนการเทรด</button>
