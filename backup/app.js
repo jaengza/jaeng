@@ -139,11 +139,8 @@ const App = {
 
     const brokerPriceInput = document.getElementById('an-broker-price');
     const brokerPrice = brokerPriceInput && brokerPriceInput.value ? parseFloat(brokerPriceInput.value) : null;
-    
-    const atrPeriodInput = document.getElementById('an-atr-period');
-    const atrPeriod = atrPeriodInput && atrPeriodInput.value ? parseInt(atrPeriodInput.value) : 14;
 
-    await Analysis.run(asset, tf, htf, brokerPrice, atrPeriod);
+    await Analysis.run(asset, tf, htf, brokerPrice);
 
     if (btn) btn.classList.remove('loading');
     if (txt) txt.textContent = '\u0e27\u0e34\u0e40\u0e04\u0e23\u0e32\u0e30\u0e2b\u0e4c\u0e2d\u0e31\u0e15\u0e42\u0e19\u0e21\u0e31\u0e15\u0e34';
@@ -271,7 +268,7 @@ const App = {
     const { rsiVal, macdVal, emaData, score, plan } = result;
     const asset = Analysis.state.asset;
     const tf    = Analysis.state.tf;
-    const fmt   = v => v !== null && v !== undefined ? parseFloat(v).toFixed((asset === 'XAUUSD' || asset === 'ETHUSDT' || asset === 'BTCUSDT') ? 2 : (asset === 'DXY' ? 3 : 5)) : '--';
+    const fmt   = v => v !== null && v !== undefined ? parseFloat(v).toFixed((asset === 'XAUUSD' || asset === 'ETHUSDT') ? 2 : (asset === 'DXY' ? 3 : 0)) : '--';
 
     el.innerHTML = `
       <div class="signal-row">

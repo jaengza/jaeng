@@ -144,8 +144,8 @@ const Calculator = {
         lot = Math.floor(rawLot * 100) / 100;
       }
     } else {
-      // Forex / Others: Standard Lot = 100,000 units
-      const rawLot = slDist > 0 ? riskUsd / (slDist * 100000) : 0;
+      // Forex: 1 pip = $10 for 1 standard lot
+      const rawLot = slDist > 0 ? riskUsd / (slDist * 10) : 0;
       if (rawLot > 0 && rawLot < 0.01) {
         lot = 0.01;
       } else {
@@ -153,12 +153,7 @@ const Calculator = {
       }
     }
 
-    let contractSize = 1;
-    if (asset === 'XAUUSD') contractSize = 100;
-    else if (asset === 'BTCUSDT' || asset === 'ETHUSDT') contractSize = 1;
-    else contractSize = 100000;
-
-    const tpUsd = lot > 0 && tpDist > 0 ? (tpDist * lot * contractSize) : (rr * riskUsd);
+    const tpUsd = lot > 0 && tpDist > 0 ? (tpDist * lot * (asset === 'XAUUSD' ? 100 : 1)) : (rr * riskUsd);
 
     // Exness Spread Cost Calculation
     let spreadMult = 10.0; // Forex default: 1 pip = 10 Points -> Point * Contract Size = 0.0001 * 100,000 = 10
@@ -235,7 +230,7 @@ const Calculator = {
     ['r-entry', 'r-sl', 'r-tp'].forEach((id, i) => {
       const val = [plan.entry, plan.sl, plan.tp][i];
       const el  = document.getElementById(id);
-      if (el && val) el.value = parseFloat(val).toFixed((asset === 'XAUUSD' || asset === 'ETHUSDT' || asset === 'BTCUSDT') ? 2 : (asset === 'DXY' ? 3 : 5));
+      if (el && val) el.value = parseFloat(val).toFixed((asset === 'XAUUSD' || asset === 'ETHUSDT') ? 2 : (asset === 'DXY' ? 3 : 2));
     });
 
     // Set Exness default spreads automatically during Auto-populate

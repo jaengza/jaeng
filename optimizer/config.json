@@ -1,0 +1,12 @@
+{
+  "assets": ["XAUUSD", "BTCUSD", "ETHUSD"],
+  "timeframes": ["5m", "15m"],
+  "accountTypes": ["standard"],
+  "parameters": {
+    "thresholds": [3.5, 4.0, 4.5, 5.0],
+    "fiboLevels": [70.5, 78.6, 88.6],
+    "atrMultipliers": [1.5, 1.8, 2.2, 2.5]
+  },
+  "capital": 50.00,
+  "riskPct": 5.0
+}

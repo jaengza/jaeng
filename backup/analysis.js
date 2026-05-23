@@ -13,7 +13,7 @@ const Analysis = {
   },
 
   /* ── Core Analysis Engine ────────────────────────────────────────────────── */
-  async run(asset = 'XAUUSD', tf = '5m', htf = '1h', brokerPrice = null, atrPeriod = 14) {
+  async run(asset = 'XAUUSD', tf = '5m', htf = '1h', brokerPrice = null) {
     if (this.state.loading) return;
     this.state.asset = asset;
     this.state.tf = tf;
@@ -23,9 +23,11 @@ const Analysis = {
     this.showLoading();
 
     try {
-      // 1. Fetch OHLCV data for selected TF and HTF sequentially to avoid API rate limits
-      const ltfCandles = await Market.fetchOHLCV(asset, tf, 250);
-      const htfCandles = await Market.fetchOHLCV(asset, htf, 250);
+      // 1. Fetch OHLCV data for selected TF and HTF concurrently
+      const [ltfCandles, htfCandles] = await Promise.all([
+        Market.fetchOHLCV(asset, tf, 250),
+        Market.fetchOHLCV(asset, htf, 250)
+      ]);
       
       if (!ltfCandles || ltfCandles.length < 50 || !htfCandles || htfCandles.length < 50) {
         throw new Error('\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e01\u0e23\u0e32\u0e1f\u0e44\u0e21\u0e48\u0e40\u0e1e\u0e35\u0e22\u0e07\u0e1e\u0e2d (\u0e15\u0e49\u0e2d\u0e07\u0e01\u0e32\u0e23\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e19\u0e49\u0e2d\u0e22 50 \u0e41\u0e17\u0e48\u0e07 \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e17\u0e31\u0e49\u0e07 LTF \u0e41\u0e25\u0e30 HTF)');
@@ -99,7 +101,7 @@ const Analysis = {
       const rsiVal     = Indicators.rsi(closes);
       const macdVal    = Indicators.macd(closes);
       const emaData    = Indicators.emaTrend(closes);
-      const atrVal     = Indicators.atr(highs, lows, closes, atrPeriod);
+      const atrVal     = Indicators.atr(highs, lows, closes);
       
       const multiEmaTrend = {};
       multiTfs.forEach((t, i) => {
@@ -216,15 +218,9 @@ const Analysis = {
         const baseSL = ob ? Math.min(swings.swingLow, ob.low) : swings.swingLow;
         sl = baseSL;
         
-        // SASP Guard against extremely tight SL
+        // SASP Guard against extremely tight SL using ATR Multiplier
         if (entry - sl < atr * atrMult || sl >= entry) {
           sl = entry - atr * atrMult;
-        }
-        
-        // Guard against extremely FAR SL (Crypto / High volatility)
-        const maxSlAtrMult = 8;
-        if (entry - sl > atr * maxSlAtrMult) {
-          sl = entry - atr * maxSlAtrMult;
         }
         
         // Take Profit targeted at Swing High (Buyside Liquidity)
@@ -239,15 +235,9 @@ const Analysis = {
         const baseSL = ob ? Math.max(swings.swingHigh, ob.high) : swings.swingHigh;
         sl = baseSL;
         
-        // SASP Guard against extremely tight SL
+        // SASP Guard against extremely tight SL using ATR Multiplier
         if (sl - entry < atr * atrMult || sl <= entry) {
           sl = entry + atr * atrMult;
-        }
-        
-        // Guard against extremely FAR SL
-        const maxSlAtrMult = 8;
-        if (sl - entry > atr * maxSlAtrMult) {
-          sl = entry + atr * maxSlAtrMult;
         }
         
         // Take Profit targeted at Swing Low (Sellside Liquidity)
@@ -432,7 +422,7 @@ const Analysis = {
     const container = document.getElementById('analysis-results');
     if (!container) return;
 
-    const dec = (this.state.asset === 'XAUUSD' || this.state.asset === 'ETHUSDT' || this.state.asset === 'BTCUSDT') ? 2 : (this.state.asset === 'DXY' ? 3 : 5);
+    const dec = (this.state.asset === 'XAUUSD' || this.state.asset === 'ETHUSDT') ? 2 : (this.state.asset === 'DXY' ? 3 : 0);
     const fmt = v => (v !== null && v !== undefined) ? v.toFixed(dec) : '--';
 
     // RSI color
